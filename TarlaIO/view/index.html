@@ -1,0 +1,120 @@
+{{define "index"}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TarlaIO</title>
+    <link rel="icon" type="image/x-icon" href="/view/resources/favicon.ico"/>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/view/resources/css/button.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        // document ready handler
+        // or $(document).ready(Function(){...
+        jQuery(function ($) { // Take all checkbox inputs from local storage and send back to the page that will be refreshed
+            var checkboxValue = JSON.parse(localStorage.getItem('checkboxValue')) || {}
+            var $checkbox = $(":checkbox");
+
+            $checkbox.on("change", function () {
+                $checkbox.each(function () {
+                    checkboxValue[this.id] = this.checked;
+                });
+                localStorage.setItem("checkboxValue", JSON.stringify(checkboxValue));
+            });
+
+            //on page load
+            $.each(checkboxValue, function (key, value) {
+                $("#" + key).prop('checked', value);
+            });
+        });
+
+    </script>
+
+    <script>
+
+
+        //
+        $(document).ready(function () {
+            $('#data tr').click(function () {        <!-- Listen all the selected row and check as true -->
+                if (event.target.type !== 'checkbox') {
+                    $(':checkbox', this).trigger('click');
+                    $(':checkbox', this).toggleClass("highlight");
+                }
+            });
+            $(':checkbox').click(function () {         <!-- Listen all the selected row and send to serves as post -->
+                let arr = $.map($(':checkbox').filter(':checked'), function (item, i) {
+                    return item.value
+                    console.log(arr)
+                })
+                $(':checkbox').filter(':checked').each(function () {
+                    let value = this.value
+                    if (this.checked) {
+                        this.setAttribute("checked", "checked");
+                    } else {
+                        this.removeAttribute("checked");
+                    }
+                });
+                //Run handle function
+                $.ajax({
+                    url: "http://localhost:8080/check",
+                    method: "POST",
+                    data: 'id=' + arr
+                });
+            });
+            //When the client click any row , it will get index page rerun
+            jQuery(document).ready(function ($) {
+                $(".clickable-row").click(function () {
+                    window.location = $(this).data("href");
+                });
+            });
+        });
+    </script>
+
+</head>
+<body style="background-color: #FEFFF9;padding:0px; position: fixed;
+margin:0px;
+width:100% !important;
+height: 90% !important">
+<div style="display: flex;justify-content: center ; padding-left: 75px "> {{template "map"}}{{template "pie"}}
+</div>
+<table class="table table-hover" id="data">
+    <thead>
+    <tr>
+        <th></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Website</th>
+        <th>Company</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- In GO, You can access data from GO send and evaluate with. Here we are setting User inf to related table column and rows.
+      The code ,that is below, is a for loop to arrange each of user and user informations-->
+    {{ range $index,$value := . }}
+    <tr class="clickable-row" data-href='http://localhost:8080/'>
+        <td>
+            <input id="{{ $value.Id }}" type="checkbox" value="{{ $value.Id }}"
+            /></td>
+        <th scope="row">{{ $value.Id }}</th>
+        <td> {{ $value.Name }}</td>
+        <td> {{ $value.Username }}</td>
+        <td> {{ $value.Email }}</td>
+        <td> {{ $value.Address.Street}} {{$value.Address.Suite}} {{$value.Address.City}}</td>
+        <td> {{ $value.Phone }}</td>
+        <td> {{ $value.Website }}</td>
+        <td> {{ $value.Company.CompanyName }} {{ $value.Company.CatchPhrase }} {{ $value.Company.Bs }}</td>
+    </tr>
+
+    {{end}}
+    </tbody>
+</table>
+
+</body>
+</html>
+{{end}}
