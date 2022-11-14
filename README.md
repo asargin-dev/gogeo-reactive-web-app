@@ -1,6 +1,9 @@
-# T.IO_ProjectWork
-This project contains source code of desired project work
+# Simple Go API
 
-!
-Some of user's geological informations was unreal. So there were no place according to these coordinates in world map. 
+Server side go web app.
+
+It gathers some specific user informations.
+
+Then renew browser for each specific choice.
+
 
