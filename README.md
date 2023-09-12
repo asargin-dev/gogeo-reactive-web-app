@@ -1,6 +1,6 @@
-# Simple Go API
+# Geo Reactive Go Web App
 
-Server side go web app.
+Server side web app that is written with Golang.
 
 It gathers some specific user informations.
 
